@@ -1,0 +1,44 @@
+name: Despliegue en GitHub Pages
+
+on:
+  # El workflow se ejecutará cuando haya un push a la rama 'main'
+  push:
+    branches:
+      - main
+  
+  # También permite ejecutar el workflow manualmente desde la interfaz de GitHub
+  workflow_dispatch:
+
+# Permite que el workflow pueda interactuar con GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # Define un único trabajo llamado 'deploy'
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio 🛍️
+        # Baja el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages ⚙️
+        # Configura el ambiente de GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Subir artefacto (Tus archivos web) 📦
+        # Sube todos los archivos de la raíz del proyecto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Indicamos que suba todo lo que está en la raíz del proyecto
+          path: './'
+
+      - name: Despliegue a GitHub Pages 🚀
+        id: deployment
+        # Ejecuta el despliegue final
+        uses: actions/deploy-pages@v4
